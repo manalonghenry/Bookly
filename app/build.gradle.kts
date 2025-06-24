@@ -51,6 +51,9 @@ android {
 
 dependencies {
 
+    implementation(libs.retrofit)
+    implementation(libs.gsonconverter)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

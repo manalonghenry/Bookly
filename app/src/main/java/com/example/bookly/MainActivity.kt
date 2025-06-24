@@ -12,11 +12,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookly.ui.theme.BooklyTheme
+import android.util.Log
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.api.searchBooks("fantasy")
+                if (response.isSuccessful) {
+                    val books = response.body()?.docs ?: emptyList()
+                    for (book in books.take(10)) { // How many books
+                        Log.d("BookAPI", "Title: ${book.title}, Author(s): ${book.author_name?.joinToString()}")
+                    }
+                } else {
+                    Log.e("BookAPI", "Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("BookAPI", "Exception: ${e.message}")
+            }
+        }
+
         setContent {
             BooklyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -29,7 +50,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-// test
 
 
 @Composable
