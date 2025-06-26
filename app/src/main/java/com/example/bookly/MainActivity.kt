@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.bookly.ui.theme.BooklyTheme
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.*
@@ -32,10 +33,10 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = RetrofitInstance.api.searchBooks("fantasy")
+                val response = RetrofitInstance.api.searchBooks("fantasy", 10) // Book limit
                 if (response.isSuccessful) {
                     val books = response.body()?.docs ?: emptyList<BookDoc>()
-                    for (book in books.take(10)) { // How many books
+                    for (book in books) {
                         Log.d("BookAPI", "Title: ${book.title}, Author(s): ${book.author_name?.joinToString()}")
                     }
                 } else {
@@ -93,6 +94,9 @@ fun HomeScreenWithBottomNav() {
     var selectedScreen by remember { mutableStateOf("discover") }
 
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         bottomBar = {
             BottomNavigationBar(
                 selected = selectedScreen,
@@ -103,6 +107,7 @@ fun HomeScreenWithBottomNav() {
         when (selectedScreen) {
             "discover" -> BookListScreen(Modifier.padding(innerPadding))
             "profile" -> ProfileScreen(Modifier.padding(innerPadding))
+            "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
         }
     }
 }

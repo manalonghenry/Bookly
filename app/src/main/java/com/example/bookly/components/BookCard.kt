@@ -40,11 +40,11 @@ fun BookCard(book: BookDoc) {
             try {
                 val descResponse = RetrofitInstance.api.getWorkDetails(workId)
                 val desc = descResponse.body()?.description
-                description = when (desc) {
-                    is String -> desc
-                    is Map<*, *> -> desc["value"] as? String ?: "No description available."
-                    else -> "No description available."
-                }
+//                description = when (desc) {
+//                    is String -> desc
+//                    is Map<*, *> -> desc["value"] as? String ?: "No description available."
+//                    else -> "No description available."
+//                }
 
                 val ratingResponse = RetrofitInstance.api.getWorkRating(workId)
                 if (ratingResponse.isSuccessful) {
@@ -80,7 +80,7 @@ fun BookCard(book: BookDoc) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = book.title ?: "Untitled", style = MaterialTheme.typography.titleMedium)
                 Text(text = authors, style = MaterialTheme.typography.bodySmall)
-                Text(text = description, style = MaterialTheme.typography.bodySmall, maxLines = 4)
+               // Text(text = description, style = MaterialTheme.typography.bodySmall, maxLines = 4)
                 rating?.let {
                     Text(text = "⭐ ${String.format("%.1f", it)}", style = MaterialTheme.typography.bodySmall)
                 }
