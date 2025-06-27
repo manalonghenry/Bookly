@@ -19,17 +19,6 @@ fun BottomNavigationBar(selected: String, onSelect: (String) -> Unit) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.primary)
      {
         NavigationBarItem(
-            selected = selected == "discover",
-            onClick = { onSelect("discover") },
-            icon = { Icon(Icons.Default.Search, contentDescription = "Discover") },
-            label = { Text("Discover") },
-            alwaysShowLabel = true,
-            colors = NavigationBarItemDefaults.colors(
-                // the pill/highlight behind the selected item:
-                indicatorColor = Color.White,
-            )
-        )
-        NavigationBarItem(
             selected = selected == "profile",
             onClick = { onSelect("profile") },
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
@@ -40,6 +29,17 @@ fun BottomNavigationBar(selected: String, onSelect: (String) -> Unit) {
                 indicatorColor = Color.White,
             )
         )
+         NavigationBarItem(
+             selected = selected == "discover",
+             onClick = { onSelect("discover") },
+             icon = { Icon(Icons.Default.Search, contentDescription = "Discover") },
+             label = { Text("Discover") },
+             alwaysShowLabel = true,
+             colors = NavigationBarItemDefaults.colors(
+                 // the pill/highlight behind the selected item:
+                 indicatorColor = Color.White,
+             )
+         )
         NavigationBarItem(
             selected = selected == "myLists",
             onClick = { onSelect("myLists") },

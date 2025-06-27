@@ -116,11 +116,11 @@ fun HomeScreenWithBottomNav() {
         }
     ) { innerPadding ->
         when (selectedScreen) {
+            "profile" -> ProfileScreen(Modifier.padding(innerPadding))
             "discover" -> BookListScreen(
                 books    = books,
                 modifier = Modifier.padding(innerPadding)
             )
-            "profile" -> ProfileScreen(Modifier.padding(innerPadding))
             "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
         }
     }
