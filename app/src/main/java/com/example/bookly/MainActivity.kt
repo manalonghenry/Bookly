@@ -10,23 +10,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookly.ui.theme.BooklyTheme
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
-import com.example.bookly.BookDoc
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
+import com.example.bookly.components.*
+import com.example.bookly.screens.*
 
 
 
@@ -37,10 +34,10 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = RetrofitInstance.api.searchBooks("fantasy")
+                val response = RetrofitInstance.api.searchBooks("fantasy", 10) // Book limit
                 if (response.isSuccessful) {
                     val books = response.body()?.docs ?: emptyList<BookDoc>()
-                    for (book in books.take(10)) { // How many books
+                    for (book in books) {
                         Log.d("BookAPI", "Title: ${book.title}, Author(s): ${book.author_name?.joinToString()}")
                     }
                 } else {
@@ -53,7 +50,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BooklyTheme {
-                BookScreen()
+                HomeScreenWithBottomNav();
             }
         }
 
@@ -61,99 +58,70 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BookScreen() {
-    val books = remember { mutableStateListOf<BookDoc>() }
-
-    LaunchedEffect(Unit) {
-        try {
-            val response = RetrofitInstance.api.searchBooks("fantasy")
-            if (response.isSuccessful) {
-                val results = response.body()?.docs ?: emptyList<BookDoc>()
-                books.addAll(results)
-            }
-        } catch (e: Exception) {
-            Log.e("BookAPI", "Exception: ${e.message}")
-        }
-    }
-
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        BookList(
-            books = books,
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Composable
-fun BookList(books: List<BookDoc>, modifier: Modifier = Modifier) {
-    LazyColumn(modifier = modifier) {
-        items(books) { book ->
-            BookCard(book)
-        }
-    }
-}
-
-@Composable
-fun BookCard(book: BookDoc) {
-    val authors = book.author_name?.joinToString(", ") ?: "Unknown Author"
-    var description by remember { mutableStateOf("Loading description...") }
-    var rating by remember {mutableStateOf<Float?>(null)}
-    LaunchedEffect(book.key) {
-        book.key?.let { key ->
-            val workId = key.removePrefix("/works/")
-            try {
-                // Fetch description
-                val descResponse = RetrofitInstance.api.getWorkDetails(workId)
-                val desc = descResponse.body()?.description
-                description = when (desc) {
-                    is String -> desc
-                    is Map<*, *> -> desc["value"] as? String ?: "No description available."
-                    else -> "No description available."
-                }
-
-                // Fetch rating
-                val ratingResponse = RetrofitInstance.api.getWorkRating(workId)
-                if (ratingResponse.isSuccessful) {
-                    rating = ratingResponse.body()?.summary?.average
-                }
-
-            } catch (e: Exception) {
-                description = "Error loading description."
-            }
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .padding(12.dp)
-            .fillMaxWidth()
-    ) {
-        Text(text = book.title ?: "Untitled", style = MaterialTheme.typography.titleMedium)
-        Text(text = authors, style = MaterialTheme.typography.bodyMedium)
-        Text(text = description, style = MaterialTheme.typography.bodySmall)
-        rating?.let {
+fun WelcomeScreen(onContinue: () -> Unit){
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
-                text = "⭐ Rating: ${String.format("%.1f", it)}",
-                style = MaterialTheme.typography.bodySmall
+                text = "📚 Welcome to Bookly!",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Swipe through books and find your next read.",
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(onClick = onContinue) {
+                Text("Get Started")
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreenWithBottomNav() {
+    var selectedScreen by remember { mutableStateOf("discover") }
+    val books = remember { mutableStateListOf<BookDoc>() } // What makes books persist
+    LaunchedEffect(Unit) {
+        if (books.isEmpty()) {
+            RetrofitInstance.api.searchBooks("fantasy", 5).takeIf { it.isSuccessful }
+                ?.body() // If non-null, get it --> else null
+                ?.docs
+                ?.let { books.addAll(it) }
+        }
+    }
+
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        bottomBar = {
+            BottomNavigationBar(
+                selected = selectedScreen,
+                onSelect = { selectedScreen = it } // Updates selectedScreen with newly selected item
             )
         }
-    }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BooklyTheme {
-        Greeting("Android")
+    ) { innerPadding ->
+        when (selectedScreen) {
+            "discover" -> BookListScreen(
+                books    = books,
+                modifier = Modifier.padding(innerPadding)
+            )
+            "profile" -> ProfileScreen(Modifier.padding(innerPadding))
+            "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
+        }
     }
 }

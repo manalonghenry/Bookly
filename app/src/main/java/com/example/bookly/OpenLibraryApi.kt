@@ -9,7 +9,8 @@ import retrofit2.http.Path
 interface OpenLibraryApi {
     @GET("search.json")
     suspend fun searchBooks(
-        @Query("q") query: String
+        @Query("q") query: String,
+        @Query("limit") limit:Int
     ): Response<BookResponse>
 
     @GET("works/{workId}.json")
