@@ -15,7 +15,7 @@ import com.example.bookly.components.*
 
 @Composable
 fun MyListsScreen(modifier: Modifier = Modifier){
-    var selectedTab by remember { mutableStateOf("Liked Books") }
+    var selectedTab by remember { mutableStateOf("To Read") }
 
     Scaffold(
         topBar = {

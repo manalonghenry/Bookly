@@ -26,6 +26,7 @@ import com.example.bookly.components.*
 import com.example.bookly.screens.*
 
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +93,16 @@ fun WelcomeScreen(onContinue: () -> Unit){
 @Composable
 fun HomeScreenWithBottomNav() {
     var selectedScreen by remember { mutableStateOf("discover") }
+    val books = remember { mutableStateListOf<BookDoc>() } // What makes books persist
+    LaunchedEffect(Unit) {
+        if (books.isEmpty()) {
+            RetrofitInstance.api.searchBooks("fantasy", 5).takeIf { it.isSuccessful }
+                ?.body() // If non-null, get it --> else null
+                ?.docs
+                ?.let { books.addAll(it) }
+        }
+    }
+
 
     Scaffold(
         modifier = Modifier
@@ -105,7 +116,10 @@ fun HomeScreenWithBottomNav() {
         }
     ) { innerPadding ->
         when (selectedScreen) {
-            "discover" -> BookListScreen(Modifier.padding(innerPadding))
+            "discover" -> BookListScreen(
+                books    = books,
+                modifier = Modifier.padding(innerPadding)
+            )
             "profile" -> ProfileScreen(Modifier.padding(innerPadding))
             "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
         }
