@@ -1,12 +1,11 @@
 package com.example.bookly.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,11 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.bookly.BookDoc
 
 @Composable
-fun BookCard(book: BookDoc) {
+fun BookCard(book: BookDoc, modifier: Modifier = Modifier) {
     val authors = book.author_name?.joinToString(", ") ?: "Unknown Author"
     var description by remember { mutableStateOf("Loading description...") }
     var rating by remember { mutableStateOf<Float?>(null) }
@@ -40,11 +40,11 @@ fun BookCard(book: BookDoc) {
             try {
                 val descResponse = RetrofitInstance.api.getWorkDetails(workId)
                 val desc = descResponse.body()?.description
-//                description = when (desc) {
-//                    is String -> desc
-//                    is Map<*, *> -> desc["value"] as? String ?: "No description available."
-//                    else -> "No description available."
-//                }
+                description = when (desc) {
+                    is String -> desc
+                    is Map<*, *> -> desc["value"] as? String ?: "No description available."
+                    else -> "No description available."
+                }
 
                 val ratingResponse = RetrofitInstance.api.getWorkRating(workId)
                 if (ratingResponse.isSuccessful) {
@@ -58,32 +58,35 @@ fun BookCard(book: BookDoc) {
 
     Card(
         modifier = Modifier
-            .padding(12.dp)
-            .fillMaxWidth(),
+            .padding(12.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp).fillMaxSize().padding(16.dp)) {
             if (coverUrl != null) {
                 AsyncImage(
                     model = coverUrl,
                     contentDescription = "${book.title} cover",
                     modifier = Modifier
-                        .size(100.dp)
+                        .size(400.dp)
                         .clip(RoundedCornerShape(8.dp))
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height( 10.dp))
 
-            // Text info on the right
+            // Text info
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = book.title ?: "Untitled", style = MaterialTheme.typography.titleMedium)
-                Text(text = authors, style = MaterialTheme.typography.bodySmall)
-               // Text(text = description, style = MaterialTheme.typography.bodySmall, maxLines = 4)
+                Text(text = book.title ?: "Untitled", style = MaterialTheme.typography.titleMedium, fontSize = 30.sp)
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = authors, style = MaterialTheme.typography.bodySmall, fontSize = 25.sp)
+                Spacer(modifier = Modifier.height(10.dp))
                 rating?.let {
-                    Text(text = "⭐ ${String.format("%.1f", it)}", style = MaterialTheme.typography.bodySmall)
+                    Text(text = "⭐ ${String.format("%.1f", it)}", style = MaterialTheme.typography.bodySmall, fontSize = 20.sp)
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = description, style = MaterialTheme.typography.bodySmall, fontSize = 17.sp)
+
             }
         }
     }
