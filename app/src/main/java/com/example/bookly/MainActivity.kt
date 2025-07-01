@@ -11,10 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.bookly.ui.theme.BooklyTheme
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -31,23 +28,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitInstance.api.searchBooks("fantasy", 10) // Book limit
-                if (response.isSuccessful) {
-                    val books = response.body()?.docs ?: emptyList<BookDoc>()
-                    for (book in books) {
-                        Log.d("BookAPI", "Title: ${book.title}, Author(s): ${book.author_name?.joinToString()}")
-                    }
-                } else {
-                    Log.e("BookAPI", "Error: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("BookAPI", "Exception: ${e.message}")
-            }
-        }
-
         setContent {
             BooklyTheme {
                 HomeScreenWithBottomNav();
@@ -98,7 +78,7 @@ fun HomeScreenWithBottomNav() {
         if (books.isEmpty()) {
             val response = RetrofitInstance
                 .api
-                .searchBooksBySubject(subjects = listOf("fantasy"), limit = 1) // only 1 book
+                .advancedSearch(query = "subject:fantasy AND subject:romance AND first_publish_year:[2000 TO *]", limit = 1)
 
             if (response.isSuccessful) {
                 response.body()?.docs
@@ -120,7 +100,9 @@ fun HomeScreenWithBottomNav() {
         }
     ) { innerPadding ->
         when (selectedScreen) {
-            "profile" -> ProfileScreen()
+            "profile" -> ProfileScreen(
+                modifier = Modifier.padding(innerPadding).fillMaxSize()
+            )
             "discover" -> DiscoverScreen(
                 books    = books,
                 modifier = Modifier.padding(innerPadding).fillMaxSize()
