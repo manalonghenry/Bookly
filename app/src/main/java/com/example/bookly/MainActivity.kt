@@ -96,10 +96,14 @@ fun HomeScreenWithBottomNav() {
     val books = remember { mutableStateListOf<BookDoc>() } // What makes books persist
     LaunchedEffect(Unit) {
         if (books.isEmpty()) {
-            RetrofitInstance.api.searchBooks("fantasy", 5).takeIf { it.isSuccessful }
-                ?.body() // If non-null, get it --> else null
-                ?.docs
-                ?.let { books.addAll(it) }
+            val response = RetrofitInstance
+                .api
+                .searchBooksBySubject(subjects = listOf("fantasy"), limit = 1) // only 1 book
+
+            if (response.isSuccessful) {
+                response.body()?.docs
+                    ?.let    { books.addAll(it) }
+            }
         }
     }
 
@@ -117,9 +121,9 @@ fun HomeScreenWithBottomNav() {
     ) { innerPadding ->
         when (selectedScreen) {
             "profile" -> ProfileScreen()
-            "discover" -> BookListScreen(
+            "discover" -> DiscoverScreen(
                 books    = books,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding).fillMaxSize()
             )
             "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
         }
