@@ -76,10 +76,10 @@ fun HomeScreenWithBottomNav() {
     var selectedScreen by remember { mutableStateOf("discover") }
 
     // filter‐option lists
-    val genres            = listOf("Non-fiction","Fantasy","Horror","Science Fiction","Mystery","Romance","Romantasy")
+    val genres            = listOf("Nonfiction","Fantasy","Horror","Science Fiction","Mystery","Romance")
     val advancedFiltering = listOf("Published in 20th Century","Published in 21st Century")
     val nonfictionTopics  = listOf("True Crime","Biographies","Science","Self Help","Politics","History")
-    val fantasyElements   = listOf("Dragons","Fairies","Elves","Vampires","Werewolves")
+    val fantasyElements   = listOf("Romance", "Dragons","Fairies","Elves","Vampires","Werewolves")
     val horrorElements    = listOf("Paranormal","Supernatural")
     val scifiElements     = listOf("Aliens","Time Travel","Artificial Intelligence")
     val romanceElements   = listOf("Sports","Dark Romance","Contemporary")
@@ -95,15 +95,39 @@ fun HomeScreenWithBottomNav() {
 
     // books‐loading logic
     val books = remember { mutableStateListOf<BookDoc>() }
-    LaunchedEffect(Unit) {
-        if (books.isEmpty()) {
-            val resp = RetrofitInstance.api.advancedSearch(
-                query = "subject:fantasy AND subject:romance AND first_publish_year:[2000 TO *]",
-                limit = 1
-            )
-            if (resp.isSuccessful) {
-                resp.body()?.docs?.let { books.addAll(it) }
-            }
+    LaunchedEffect(
+        genreSelection,
+        advancedSelection,
+        nonfictionSelection,
+        fantasySelection,
+        horrorSelection,
+        scifiSelection,
+        romanceSelection
+    ) {
+        // build the query string
+        val raw = QueryBuilder.buildQuery(
+            genreSelection,
+            advancedSelection,
+            nonfictionSelection,
+            fantasySelection,
+            horrorSelection,
+            scifiSelection,
+            romanceSelection
+        )
+
+        // default
+        val finalQuery = raw.ifBlank { "subject:fantasy" }
+
+        //  real query
+        val resp = RetrofitInstance.api.advancedSearch(
+            query = finalQuery,
+            limit = 20
+        )
+        if (resp.isSuccessful) {
+            books.clear()
+            books.addAll(resp.body()?.docs.orEmpty())
+        } else {
+            Log.e("API", "Error ${resp.code()}")
         }
     }
 
@@ -126,8 +150,8 @@ fun HomeScreenWithBottomNav() {
                     genreSelection      = it
                     Log.d("FILTER_LOG", "Selected genres: ${it.filterValues {v -> v}.keys}")
                                       },
-                selectedAdvanced    = advancedSelection,
-                onAdvancedChanged   = { advancedSelection   = it },
+                selectedDates    = advancedSelection,
+                onDatesChanged   = { advancedSelection   = it },
                 selectedNonfiction  = nonfictionSelection,
                 onNonfictionChanged = { nonfictionSelection = it },
                 selectedFantasy     = fantasySelection,
