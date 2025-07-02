@@ -77,14 +77,15 @@ fun HomeScreenWithBottomNav() {
 
     // filter‐option lists
     val genres            = listOf("Nonfiction","Fantasy","Horror","Science Fiction","Mystery","Romance")
-    val advancedFiltering = listOf("Published in 20th Century","Published in 21st Century")
+    val advancedFiltering = listOf("Published in 20th Century","Published in 21st Century to 2015",
+        "Published 2016 to now")
     val nonfictionTopics  = listOf("True Crime","Biographies","Science","Self Help","Politics","History")
     val fantasyElements   = listOf("Romance", "Dragons","Fairies","Elves","Vampires","Werewolves")
-    val horrorElements    = listOf("Paranormal","Supernatural")
-    val scifiElements     = listOf("Aliens","Time Travel","Artificial Intelligence")
+    val horrorElements    = listOf("Paranormal","Supernatural", "Zombies")
+    val scifiElements     = listOf("Aliens","Time Travel","Artificial Intelligence", "Zombies", "Dystopia", "Space Opera")
     val romanceElements   = listOf("Sports","Dark Romance","Contemporary")
 
-    // Hoist each selection map into this parent composable
+    // Hoist each selection map into this parent composable -- so it persists
     var genreSelection      by remember { mutableStateOf(genres.associateWith { false }) }
     var advancedSelection   by remember { mutableStateOf(advancedFiltering.associateWith { false }) }
     var nonfictionSelection by remember { mutableStateOf(nonfictionTopics.associateWith { false }) }

@@ -59,8 +59,8 @@ fun ProfileScreen(
         Spacer(Modifier.height(8.dp))
         Text(
             text     = "Note: by selecting these genres, you will see books from all sub-categories of this genre. " +
-                    "Therefore, if you want to see only specific sub-categories of a specific genre, then select it " +
-                    "in the Advanced Filtering Options section.",
+                    "Therefore, if you want to see ONLY specific sub-category books of a specific genre, then select it " +
+                    "in the Advanced Filtering Options section and do NOT select the overall genre here.",
             fontSize = 14.sp,
             color = Color(0xFF47506B),
             modifier = Modifier.align(Alignment.Start)

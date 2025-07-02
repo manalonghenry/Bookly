@@ -21,7 +21,8 @@ object QueryBuilder {
 
         val yearClauses = mutableListOf<String>().apply {
             if (selectedDates["Published in 20th Century"] == true) add("first_publish_year:[* TO 1999]")
-            if (selectedDates["Published in 21st Century"] == true) add("first_publish_year:[2000 TO *]")
+            if (selectedDates["Published in 21st Century to 2015"] == true) add("first_publish_year:[2000 TO 2015]")
+            if (selectedDates["Published 2016 to now"] == true) add("first_publish_year:[2016 TO *]")
         }
 
         val parts = mutableListOf<String>()
