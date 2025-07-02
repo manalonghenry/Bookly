@@ -29,4 +29,10 @@ interface OpenLibraryApi {
         @Path("workId") workId: String
     ): Response<WorkRatingResponse>
 
+    @GET("search.json")
+    suspend fun advancedSearch(
+        @Query("q")     query: String,
+        @Query("limit") limit:   Int
+    ): Response<BookResponse>
+
 }

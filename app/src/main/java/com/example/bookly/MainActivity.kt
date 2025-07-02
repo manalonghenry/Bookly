@@ -1,6 +1,7 @@
 package com.example.bookly
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,10 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.bookly.ui.theme.BooklyTheme
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -31,23 +29,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitInstance.api.searchBooks("fantasy", 10) // Book limit
-                if (response.isSuccessful) {
-                    val books = response.body()?.docs ?: emptyList<BookDoc>()
-                    for (book in books) {
-                        Log.d("BookAPI", "Title: ${book.title}, Author(s): ${book.author_name?.joinToString()}")
-                    }
-                } else {
-                    Log.e("BookAPI", "Error: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("BookAPI", "Exception: ${e.message}")
-            }
-        }
-
         setContent {
             BooklyTheme {
                 HomeScreenWithBottomNav();
@@ -93,20 +74,38 @@ fun WelcomeScreen(onContinue: () -> Unit){
 @Composable
 fun HomeScreenWithBottomNav() {
     var selectedScreen by remember { mutableStateOf("discover") }
-    val books = remember { mutableStateListOf<BookDoc>() } // What makes books persist
+
+    // filter‐option lists
+    val genres            = listOf("Non-fiction","Fantasy","Horror","Science Fiction","Mystery","Romance","Romantasy")
+    val advancedFiltering = listOf("Published in 20th Century","Published in 21st Century")
+    val nonfictionTopics  = listOf("True Crime","Biographies","Science","Self Help","Politics","History")
+    val fantasyElements   = listOf("Dragons","Fairies","Elves","Vampires","Werewolves")
+    val horrorElements    = listOf("Paranormal","Supernatural")
+    val scifiElements     = listOf("Aliens","Time Travel","Artificial Intelligence")
+    val romanceElements   = listOf("Sports","Dark Romance","Contemporary")
+
+    // Hoist each selection map into this parent composable
+    var genreSelection      by remember { mutableStateOf(genres.associateWith { false }) }
+    var advancedSelection   by remember { mutableStateOf(advancedFiltering.associateWith { false }) }
+    var nonfictionSelection by remember { mutableStateOf(nonfictionTopics.associateWith { false }) }
+    var fantasySelection    by remember { mutableStateOf(fantasyElements.associateWith { false }) }
+    var horrorSelection     by remember { mutableStateOf(horrorElements.associateWith { false }) }
+    var scifiSelection      by remember { mutableStateOf(scifiElements.associateWith { false }) }
+    var romanceSelection    by remember { mutableStateOf(romanceElements.associateWith { false }) }
+
+    // books‐loading logic
+    val books = remember { mutableStateListOf<BookDoc>() }
     LaunchedEffect(Unit) {
         if (books.isEmpty()) {
-            val response = RetrofitInstance
-                .api
-                .searchBooksBySubject(subjects = listOf("fantasy"), limit = 1) // only 1 book
-
-            if (response.isSuccessful) {
-                response.body()?.docs
-                    ?.let    { books.addAll(it) }
+            val resp = RetrofitInstance.api.advancedSearch(
+                query = "subject:fantasy AND subject:romance AND first_publish_year:[2000 TO *]",
+                limit = 1
+            )
+            if (resp.isSuccessful) {
+                resp.body()?.docs?.let { books.addAll(it) }
             }
         }
     }
-
 
     Scaffold(
         modifier = Modifier
@@ -115,17 +114,46 @@ fun HomeScreenWithBottomNav() {
         bottomBar = {
             BottomNavigationBar(
                 selected = selectedScreen,
-                onSelect = { selectedScreen = it } // Updates selectedScreen with newly selected item
+                onSelect = { selectedScreen = it }
             )
         }
     ) { innerPadding ->
         when (selectedScreen) {
-            "profile" -> ProfileScreen()
+            "profile" -> ProfileScreen(
+                // pass down every piece of state + its setter
+                selectedGenres      = genreSelection,
+                onGenresChanged     = {
+                    genreSelection      = it
+                    Log.d("FILTER_LOG", "Selected genres: ${it.filterValues {v -> v}.keys}")
+                                      },
+                selectedAdvanced    = advancedSelection,
+                onAdvancedChanged   = { advancedSelection   = it },
+                selectedNonfiction  = nonfictionSelection,
+                onNonfictionChanged = { nonfictionSelection = it },
+                selectedFantasy     = fantasySelection,
+                onFantasyChanged    = { fantasySelection    = it },
+                selectedHorror      = horrorSelection,
+                onHorrorChanged     = { horrorSelection     = it },
+                selectedScifi       = scifiSelection,
+                onScifiChanged      = { scifiSelection      = it },
+                selectedRomance     = romanceSelection,
+                onRomanceChanged    = { romanceSelection    = it },
+
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
             "discover" -> DiscoverScreen(
                 books    = books,
-                modifier = Modifier.padding(innerPadding).fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
             )
-            "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
+            "myLists" -> MyListsScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
         }
     }
 }
