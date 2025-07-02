@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bookly.components.FilterChecklist
@@ -17,8 +18,8 @@ import com.example.bookly.ui.theme.PinkPrimaryDark
 fun ProfileScreen(
     selectedGenres: Map<String, Boolean>,
     onGenresChanged: (Map<String, Boolean>) -> Unit,
-    selectedAdvanced: Map<String, Boolean>,
-    onAdvancedChanged: (Map<String, Boolean>) -> Unit,
+    selectedDates: Map<String, Boolean>,
+    onDatesChanged: (Map<String, Boolean>) -> Unit,
     selectedNonfiction: Map<String, Boolean>,
     onNonfictionChanged: (Map<String, Boolean>) -> Unit,
     selectedFantasy: Map<String, Boolean>,
@@ -32,7 +33,7 @@ fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     val genres            = selectedGenres.keys.toList()
-    val dates = selectedAdvanced.keys.toList()
+    val dates = selectedDates.keys.toList()
     val nonfictionTopics  = selectedNonfiction.keys.toList()
     val fantasyElements   = selectedFantasy.keys.toList()
     val horrorElements    = selectedHorror.keys.toList()
@@ -56,6 +57,15 @@ fun ProfileScreen(
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(Modifier.height(8.dp))
+        Text(
+            text     = "Note: by selecting these genres, you will see books from all sub-categories of this genre. " +
+                    "Therefore, if you want to see ONLY specific sub-category books of a specific genre, then select it " +
+                    "in the Advanced Filtering Options section and do NOT select the overall genre here.",
+            fontSize = 14.sp,
+            color = Color(0xFF47506B),
+            modifier = Modifier.align(Alignment.Start)
+        )
+        Spacer(Modifier.height(8.dp))
         FilterChecklist(
             options            = genres,
             selected           = selectedGenres,
@@ -74,12 +84,13 @@ fun ProfileScreen(
         Text(
             text     = "Dates:",
             fontSize = 17.sp,
+            color = Color(0xFF4292C6),
             modifier = Modifier.align(Alignment.Start)
         )
         FilterChecklist(
             options            = dates,
-            selected           = selectedAdvanced,
-            onSelectionChanged = onAdvancedChanged,
+            selected           = selectedDates,
+            onSelectionChanged = onDatesChanged,
             modifier           = Modifier.fillMaxWidth()
         )
 
@@ -87,6 +98,7 @@ fun ProfileScreen(
         Text(
             text     = "Specific non-fiction topics:",
             fontSize = 17.sp,
+            color = Color(0xFF4292C6),
             modifier = Modifier.align(Alignment.Start)
         )
         FilterChecklist(
@@ -100,6 +112,7 @@ fun ProfileScreen(
         Text(
             text     = "Specific fantasy elements:",
             fontSize = 17.sp,
+            color = Color(0xFF4292C6),
             modifier = Modifier.align(Alignment.Start)
         )
         FilterChecklist(
@@ -113,6 +126,7 @@ fun ProfileScreen(
         Text(
             text     = "Specific horror elements:",
             fontSize = 17.sp,
+            color = Color(0xFF4292C6),
             modifier = Modifier.align(Alignment.Start)
         )
         FilterChecklist(
@@ -126,6 +140,7 @@ fun ProfileScreen(
         Text(
             text     = "Specific science fiction elements:",
             fontSize = 17.sp,
+            color = Color(0xFF4292C6),
             modifier = Modifier.align(Alignment.Start)
         )
         FilterChecklist(
@@ -139,6 +154,7 @@ fun ProfileScreen(
         Text(
             text     = "Specific romance elements:",
             fontSize = 17.sp,
+            color = Color(0xFF4292C6),
             modifier = Modifier.align(Alignment.Start)
         )
         FilterChecklist(
