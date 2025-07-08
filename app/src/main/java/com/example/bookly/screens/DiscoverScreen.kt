@@ -2,6 +2,8 @@ package com.example.bookly.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,50 +31,52 @@ fun DiscoverScreen(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("No books available", style = MaterialTheme.typography.bodyLarge)
+            Text("No books available")
         }
     } else {
         val book = books.first()
 
-        Column(
-            modifier = modifier
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .background(Color.White), // Ensure background contrast
-            verticalArrangement = Arrangement.Top
+                .background(Color.White)
         ) {
-            // Book Card
-            BookCard(
-                book = book,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Reaction Buttons (with debug styling)
+            Box(modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(15.dp)
+                .fillMaxWidth()
+                .height(725.dp)
+            ){
+                BookCard(
+                    book = book,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            // Reaction bar
             Box(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .background(Color(0xFFE0E0E0)) // Light grey background
-                    .padding(8.dp)
+                    .height(170.dp)
+                    .background(Color.Transparent)
+                    .padding(4.dp)
             ) {
                 BookReactionBar(
                     currentBook = book,
-                    onReact = { reaction ->
+                    onReact     = { reaction ->
                         when (reaction) {
-                            BookReaction.READ_LIKED -> readLiked.add(book)
-                            BookReaction.READ_DISLIKED -> readDisliked.add(book)
-                            BookReaction.INTERESTED -> interested.add(book)
-                            BookReaction.NOT_INTERESTED -> notInterested.add(book)
+                            BookReaction.READ_LIKED      -> readLiked.add(book)
+                            BookReaction.READ_DISLIKED   -> readDisliked.add(book)
+                            BookReaction.INTERESTED      -> interested.add(book)
+                            BookReaction.NOT_INTERESTED  -> notInterested.add(book)
                         }
-
+                        // move to next book
                         books.remove(book)
-                        println("User selected: $reaction")
                     }
                 )
             }
         }
+
+
     }
 }

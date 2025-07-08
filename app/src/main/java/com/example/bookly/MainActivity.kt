@@ -123,7 +123,8 @@ fun HomeScreenWithBottomNav() {
             "profile" -> ProfileScreen()
             "discover" -> DiscoverScreen(
                 books    = books,
-                modifier = Modifier.padding(innerPadding).fillMaxSize()
+                modifier = Modifier.padding(innerPadding)
+//                    .fillMaxSize()
             )
             "myLists" -> MyListsScreen(Modifier.padding(innerPadding))
         }
