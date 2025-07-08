@@ -16,10 +16,10 @@ object RetrofitInstance {
 
 }
 
-interface OpenLibraryApi {
-    @GET("search.json")
-    suspend fun searchBooksBySubject(
-        @Query("subject") subject: String, //  “genre” filter
-        @Query("limit")   limit:   Int
-    ): Response<BookResponse>
-}
+//interface OpenLibraryApi {
+//    @GET("search.json")
+//    suspend fun searchBooksBySubject(
+//        @Query("subject") subject: String, //  “genre” filter
+//        @Query("limit")   limit:   Int
+//    ): Response<BookResponse>
+//}
