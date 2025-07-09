@@ -18,14 +18,9 @@ import com.example.bookly.components.BookReactionBar
 @Composable
 fun DiscoverScreen(
     books: MutableList<BookDoc>,
+    onReact: (BookDoc, BookReaction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Keep track of reactions
-    val readLiked = remember { mutableStateListOf<BookDoc>() }
-    val readDisliked = remember { mutableStateListOf<BookDoc>() }
-    val interested = remember { mutableStateListOf<BookDoc>() }
-    val notInterested = remember { mutableStateListOf<BookDoc>() }
-
     if (books.isEmpty()) {
         Box(
             modifier = modifier.fillMaxSize(),
@@ -33,50 +28,38 @@ fun DiscoverScreen(
         ) {
             Text("No books available")
         }
-    } else {
-        val book = books.first()
+        return
+    }
+
+    val book = books.first()
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            BookCard(book = book, modifier = Modifier.fillMaxWidth())
+        }
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-        ) {
-            Box(modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(15.dp)
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(725.dp)
-            ){
-                BookCard(
-                    book = book,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            // Reaction bar
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(170.dp)
-                    .background(Color.Transparent)
-                    .padding(4.dp)
-            ) {
-                BookReactionBar(
-                    currentBook = book,
-                    onReact     = { reaction ->
-                        when (reaction) {
-                            BookReaction.READ_LIKED      -> readLiked.add(book)
-                            BookReaction.READ_DISLIKED   -> readDisliked.add(book)
-                            BookReaction.INTERESTED      -> interested.add(book)
-                            BookReaction.NOT_INTERESTED  -> notInterested.add(book)
-                        }
-                        // move to next book
-                        books.remove(book)
-                    }
-                )
-            }
+                .background(Color(0xFFE0E0E0))
+                .padding(8.dp)
+        ) {
+            BookReactionBar(
+                currentBook = book,
+                onReact     = { reaction ->
+                    onReact(book, reaction)
+                },
+            )
         }
-
-
     }
 }

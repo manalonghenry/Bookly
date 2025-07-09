@@ -107,7 +107,7 @@ fun HomeScreenWithBottomNav() {
         scifiSelection,
         romanceSelection
     ) {
-        // build your query string
+        // build query string
         val raw       = QueryBuilder.buildQuery(
             genreSelection, advancedSelection,
             nonfictionSelection, fantasySelection,
@@ -121,17 +121,17 @@ fun HomeScreenWithBottomNav() {
         )
 
         if (resp.isSuccessful) {
-            // ① clear old results
+            // clear old results
             books.clear()
 
-            // ② take only unseen ones
+            // take only unseen ones
             val incoming  = resp.body()?.docs.orEmpty()
             val newBooks  = incoming.filter { it.key != null && it.key !in seenIds }
 
-            // ③ show them
+            // show them
             books.addAll(newBooks)
 
-            // ⚠️ don’t update seenIds here!
+            // don’t update seenIds here
         } else {
             Log.e("HomeScreen", "API error ${resp.code()}")
         }
@@ -177,7 +177,11 @@ fun HomeScreenWithBottomNav() {
                 books    = books,
 
                 modifier = Modifier
-                    .padding(innerPadding)
+                    .padding(innerPadding),
+                onReact = { book, reaction ->
+                    book.key?.let{seenIds.add(it)}
+                    books.remove(book)
+                }
             )
             "myLists" -> MyListsScreen(
                 modifier = Modifier
