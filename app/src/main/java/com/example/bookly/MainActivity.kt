@@ -98,6 +98,11 @@ fun HomeScreenWithBottomNav() {
 
     // books‐loading logic
     val books = remember { mutableStateListOf<BookDoc>() }
+    val likedBooks = remember { mutableStateListOf<BookDoc>() }
+    val dislikedBooks = remember { mutableStateListOf<BookDoc>() }
+    val interestedBooks = remember { mutableStateListOf<BookDoc>() }
+    val notInterestedBooks = remember { mutableStateListOf<BookDoc>() }
+
     LaunchedEffect(
         genreSelection,
         advancedSelection,
@@ -174,17 +179,32 @@ fun HomeScreenWithBottomNav() {
                     .padding(innerPadding)
             )
             "discover" -> DiscoverScreen(
-                books    = books,
-
-                modifier = Modifier
-                    .padding(innerPadding),
+                books   = books,
                 onReact = { book, reaction ->
-                    book.key?.let{seenIds.add(it)}
+                    // mark seen so filters never bring it back
+                    book.key?.let { seenIds.add(it) }
+
+                    // remove it from the discover stack
                     books.remove(book)
-                }
+
+                    // add to the right “My Lists” bucket
+                    when (reaction) {
+                        BookReaction.READ_LIKED      -> likedBooks.add(book)
+                        BookReaction.READ_DISLIKED   -> dislikedBooks.add(book)
+                        BookReaction.INTERESTED      -> interestedBooks.add(book)
+                        BookReaction.NOT_INTERESTED  -> notInterestedBooks.add(book)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
             )
             "myLists" -> MyListsScreen(
-                modifier = Modifier
+                likedBooks        = likedBooks,
+                dislikedBooks     = dislikedBooks,
+                interestedBooks   = interestedBooks,
+                notInterestedBooks= notInterestedBooks,
+                modifier          = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
             )
