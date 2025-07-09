@@ -94,6 +94,8 @@ fun HomeScreenWithBottomNav() {
     var scifiSelection      by remember { mutableStateOf(scifiElements.associateWith { false }) }
     var romanceSelection    by remember { mutableStateOf(romanceElements.associateWith { false }) }
 
+    val seenIds = remember { mutableStateListOf<String>() }
+
     // books‐loading logic
     val books = remember { mutableStateListOf<BookDoc>() }
     LaunchedEffect(
@@ -105,30 +107,33 @@ fun HomeScreenWithBottomNav() {
         scifiSelection,
         romanceSelection
     ) {
-        // build the query string
-        val raw = QueryBuilder.buildQuery(
-            genreSelection,
-            advancedSelection,
-            nonfictionSelection,
-            fantasySelection,
-            horrorSelection,
-            scifiSelection,
+        // build query string
+        val raw       = QueryBuilder.buildQuery(
+            genreSelection, advancedSelection,
+            nonfictionSelection, fantasySelection,
+            horrorSelection, scifiSelection,
             romanceSelection
         )
-
-        // default
-        val finalQuery = raw.ifBlank { "subject:fantasy" }
-
-        //  real query
-        val resp = RetrofitInstance.api.advancedSearch(
-            query = finalQuery,
+        val finalQ    = raw.ifBlank { "subject:fantasy" }
+        val resp      = RetrofitInstance.api.advancedSearch(
+            query = finalQ,
             limit = 20
         )
+
         if (resp.isSuccessful) {
+            // clear old results
             books.clear()
-            books.addAll(resp.body()?.docs.orEmpty())
+
+            // take only unseen ones
+            val incoming  = resp.body()?.docs.orEmpty()
+            val newBooks  = incoming.filter { it.key != null && it.key !in seenIds }
+
+            // show them
+            books.addAll(newBooks)
+
+            // don’t update seenIds here
         } else {
-            Log.e("API", "Error ${resp.code()}")
+            Log.e("HomeScreen", "API error ${resp.code()}")
         }
     }
 
@@ -172,7 +177,11 @@ fun HomeScreenWithBottomNav() {
                 books    = books,
 
                 modifier = Modifier
-                    .padding(innerPadding)
+                    .padding(innerPadding),
+                onReact = { book, reaction ->
+                    book.key?.let{seenIds.add(it)}
+                    books.remove(book)
+                }
             )
             "myLists" -> MyListsScreen(
                 modifier = Modifier
