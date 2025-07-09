@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopNavigationBar(selected: String, onSelect: (String) -> Unit) {
+fun TopNavigationBar(tabs:List<String>, selected: String, onSelect: (String) -> Unit) {
     TopAppBar(
         title = { Text("\uD83D\uDCDA My Lists") },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -27,30 +27,30 @@ fun TopNavigationBar(selected: String, onSelect: (String) -> Unit) {
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         actions = {
-            IconButton(onClick = { onSelect("To Read") }) {
+            IconButton(onClick = { onSelect("Interested") }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.LibraryBooks,
-                    contentDescription = "To Read",
-                    tint = if (selected == "To Read")
+                    contentDescription = "Interested",
+                    tint = if (selected == "Interested")
                         MaterialTheme.colorScheme.onPrimary
                     else
                        Color.DarkGray
                 )
             }
-            IconButton(onClick = { onSelect("Liked Books") }) {
+            IconButton(onClick = { onSelect("Liked") }) {
                 Icon(
                     imageVector = Icons.Default.ThumbUpOffAlt,
                     contentDescription = "Liked",
-                    tint = if (selected == "Liked Books")
+                    tint = if (selected == "Liked")
                         MaterialTheme.colorScheme.onPrimary
                     else
                         Color.DarkGray                )
             }
-            IconButton(onClick = { onSelect("Disliked Books") }) {
+            IconButton(onClick = { onSelect("Disliked") }) {
                 Icon(
                     imageVector = Icons.Outlined.ThumbDown,
                     contentDescription = "Disliked",
-                    tint = if (selected == "Disliked Books")
+                    tint = if (selected == "Disliked")
                         MaterialTheme.colorScheme.onPrimary
                     else
                         Color.DarkGray                )
