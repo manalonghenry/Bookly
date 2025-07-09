@@ -58,11 +58,11 @@ fun BookCard(book: BookDoc, modifier: Modifier = Modifier) {
 
     Card(
         modifier = Modifier
-            .padding(12.dp),
+            .padding(4.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp).fillMaxSize().padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp).padding(16.dp)) {
             if (coverUrl != null) {
                 AsyncImage(
                     model = coverUrl,
