@@ -10,6 +10,12 @@ object QueryBuilder {
         selectedScifi:       Map<String, Boolean>,
         selectedRomance:     Map<String, Boolean>
     ): String {
+        val excludedSubjects = listOf("Juvenile fiction", "Juvenile literature", "Children",
+            "Study guides", "Coloring books", "Activity books",
+            "Textbooks", "Examinations", "Workbooks", "Study guides")
+        val exclusionClause = excludedSubjects.joinToString(" AND "){
+            "(NOT subject:\"$it\")"
+        }
         val subjectClauses = mutableListOf<String>().apply {
             selectedGenres      .filterValues { it }.keys.forEach { add("subject:\"$it\"") }
             selectedNonfiction  .filterValues { it }.keys.forEach { add("(subject:\"$it\" AND subject:Nonfiction)") }
@@ -31,6 +37,10 @@ object QueryBuilder {
         }
         if (yearClauses.isNotEmpty()) {
             parts += "(" + yearClauses.joinToString(" OR ") + ")"
+        }
+
+        if(parts.isNotEmpty()){
+            parts += exclusionClause
         }
 
         return parts.joinToString(" AND ")
