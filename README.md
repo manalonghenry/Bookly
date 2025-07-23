@@ -55,3 +55,7 @@ Add visual loading spinners or progress indicators when:
 ### 📖 Book Detail View
 Make each book on the Discover screen tappable to:
 * Open a dedicated screen with a full description, author bio (if available), and more rating details
+
+### 🧐 Better Suggestions
+Suggest more relevant books by:
+* Removing work books, activity books, study guides, textbooks, etc. 
