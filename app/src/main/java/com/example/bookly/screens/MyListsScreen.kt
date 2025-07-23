@@ -1,6 +1,7 @@
 package com.example.bookly.screens
 
 
+import ListBookCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,7 @@ fun MyListsScreen(
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf("Liked", "Disliked", "Interested", "Not Interested")
-    var selectedTab by remember { mutableStateOf(tabs[0]) }
+    var selectedTab by remember { mutableStateOf(tabs[2]) }
 
     Scaffold(
         topBar = {
@@ -68,7 +69,7 @@ private fun BookListContent(books: List<BookDoc>) {
                     .fillMaxWidth()
                     .height(180.dp)
             ) {
-                BookCard(
+                ListBookCard(
                     book     = book,
                     modifier = Modifier.fillMaxSize()
                 )

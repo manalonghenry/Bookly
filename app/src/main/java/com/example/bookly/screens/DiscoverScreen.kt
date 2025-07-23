@@ -51,7 +51,7 @@ fun DiscoverScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .background(Color(0xFFE0E0E0))
+                .background(Color(0x00000000))
                 .padding(8.dp)
         ) {
             BookReactionBar(
