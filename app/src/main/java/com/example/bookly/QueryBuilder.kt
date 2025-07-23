@@ -12,9 +12,9 @@ object QueryBuilder {
     ): String {
         val excludedSubjects = listOf("Juvenile fiction", "Juvenile literature", "Children",
             "Study guides", "Coloring books", "Activity books",
-            "Textbooks", "Examinations", "Workbooks")
+            "Textbooks", "Examinations", "Workbooks", "Study guides")
         val exclusionClause = excludedSubjects.joinToString(" AND "){
-            "(NOT subject:\$it\")"
+            "(NOT subject:\"$it\")"
         }
         val subjectClauses = mutableListOf<String>().apply {
             selectedGenres      .filterValues { it }.keys.forEach { add("subject:\"$it\"") }
@@ -39,7 +39,9 @@ object QueryBuilder {
             parts += "(" + yearClauses.joinToString(" OR ") + ")"
         }
 
-        parts += exclusionClause
+        if(parts.isNotEmpty()){
+            parts += exclusionClause
+        }
 
         return parts.joinToString(" AND ")
             .takeIf { it.isNotBlank() }
