@@ -23,6 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.bookly.BookDoc
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
+
 
 @Composable
 fun BookCard(book: BookDoc, modifier: Modifier = Modifier) {
@@ -64,13 +70,32 @@ fun BookCard(book: BookDoc, modifier: Modifier = Modifier) {
     ) {
         Column(modifier = Modifier.padding(16.dp).padding(16.dp)) {
             if (coverUrl != null) {
-                AsyncImage(
+                SubcomposeAsyncImage(
                     model = coverUrl,
                     contentDescription = "${book.title} cover",
                     modifier = Modifier
                         .size(400.dp)
                         .clip(RoundedCornerShape(8.dp))
-                )
+                ) {
+                    when (painter.state) {
+                        is coil.compose.AsyncImagePainter.State.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                        is coil.compose.AsyncImagePainter.State.Error -> {
+                            Text("❌ Failed to load cover")
+                        }
+                        else -> {
+                            SubcomposeAsyncImageContent()
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height( 10.dp))
