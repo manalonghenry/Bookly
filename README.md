@@ -58,4 +58,17 @@ Make each book on the Discover screen tappable to:
 
 ### 🧐 Better Suggestions
 Suggest more relevant books by:
-* Removing work books, activity books, study guides, textbooks, etc. 
+* Removing work books, activity books, study guides, textbooks, etc.
+
+### ✅ Serializable
+The user's data will be saved such as:
+* The user's lists
+* The user's last saved filtering preferences
+
+## 🤔 Potential Ideas
+
+### 📊 Data and Insights
+User's can see insights of their preferences such as:
+* The most popular genres that they are interested in
+* The genres that the user seems the least interested in
+
