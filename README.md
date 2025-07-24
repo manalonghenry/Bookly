@@ -34,6 +34,12 @@ View and manage books by reaction category using a custom top tab bar.
 * Filter by genre, specific subgenre elements, and publication date ranges
 * Dynamically built Open Library query with ```QueryBuilder.kt```
 
+### 💬 Responsive UI Feedback
+* Displays loading indicators:
+  * Books are being fetched from the API
+  * Book covers are loading
+  * New filters are being applied
+
 ## 🛠 Tech Stack
 * Language: Kotlin
 * UI Toolkit: Jetpack Compose
@@ -45,12 +51,6 @@ Bookly uses Open Library's Search API:
 * ```/works/{id}/ratings.json``` -- average rating
 
 ## 🔄 Future Updates
-
-### ⏳ Loading Indicators
-Add visual loading spinners or progress indicators when:
-* Fetching books from the API
-* Loading book details and ratings
-* Applying filters or refreshing the book stack
 
 ### 📖 Book Detail View
 Make each book on the Discover screen tappable to:
